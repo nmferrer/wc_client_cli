@@ -25,7 +25,7 @@ fn parse_buffer(buf: &String) -> Result<crate::Input, String> {
     assert!(re.is_match(buf));//verify: Does it match?
     let Some((_full,[command, city, state])) = 
         re.captures(buf).map(|caps| caps.extract()) else { return Err("Regex failed".to_string()) };
-    
+    //TODO: Gracefully handle panic! 
     let mut f_type = ForecastType::Forecast;
     match command { //OK. Extend to other commands.
         "forecast"          => f_type = ForecastType::Forecast,
@@ -45,7 +45,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
    
     //TODO: GRACEFULLY HANDLE ERRORS AND BAD INPUT
     let addr = "127.0.0.1:8080";
-    let addr_url = format!("http://{}/forecast", addr); //TODO: Hacky solution. In practice, reqwest accesses URL
+    let addr_url = format!("http://{}/forecast", addr);
+    //TODO: Hacky solution. In practice, reqwest accesses URL
+    //TODO: CONSIDER different endpoints for different functions
     let client = reqwest::Client::builder()
         .build()
         .expect("client built");
